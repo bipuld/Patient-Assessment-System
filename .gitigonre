@@ -4,6 +4,21 @@ __pycache__/
 *$py.class
 .activate.bat
 
+
+# Ignore virtual environment files
+venv/
+env/
+*.env
+
+# Ignore activate.bat script
+activate.bat
+
+
+# Ignore debug log file
+debug.log
+
+
+
 patients_asse/.env
 # C extensions
 *.so

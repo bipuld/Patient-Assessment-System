@@ -1,5 +1,9 @@
+import os
+
+
 from pathlib import Path
 from decouple import config
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,14 +23,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
 
 ]
-
+EXTERNAL_APPS = [
+    'user'
+]
+INSTALLED_APPS.extend(EXTERNAL_APPS)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -114,6 +119,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Location where collectstatic will place static files for production
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Your project's static files directory
+]
+
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -123,8 +136,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'  
 
+# media file settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# This logging setting will create a debug.log file in the root directory of the project.
+# REST Framework settings for JWT
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+# Configuration for Simple JWT tokens
+SIMPLE_JWT = {
+    # Lifetime of access tokens
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    
+    # Lifetime of refresh tokens
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+
+
+# This logging setting will creat
+# e a debug.log file in the root directory of the project.
 
 LOGGING = {
     'version': 1,
@@ -156,3 +191,4 @@ LOGGING = {
 
     },
 }
+
