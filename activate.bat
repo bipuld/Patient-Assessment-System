@@ -1,0 +1,1 @@
+E:\coding\python\django\django-rest-framework\patient assessment system\env\Scripts\activate.bat
