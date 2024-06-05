@@ -11,7 +11,6 @@ from datetime import datetime
 class PatientsRecord(APIView):
     """
     API endpoint for creating a new patient record.
-
     Method: POST
     Parameters (JSON Body):
         - full_name (str): The patient's full name. (Required)
@@ -85,9 +84,23 @@ class PatientsRecord(APIView):
     
 
     def put(self, request):
-        """this method handle the Updating of  all  of the Patients records  with their id passing in the headres associated with Specific login user"""
+        """
+        Update the patient record associated with the logged-in user.
+
+        Method: PUT
+        Parameters:
+            - patients-id (int): The ID of the patient record to be updated (in headers).
+            - Full Patient Record (JSON Body): The updated patient record data.
+
+        Returns:
+            - 200 OK: If the patient record is updated successfully.
+            - 400 BAD REQUEST: If patient ID is missing or data is invalid.
+            - 403 FORBIDDEN: If the user is not authorized to update the patient record.
+            - 404 NOT FOUND: If the patient record does not exist.
+        """
         patient_id = request.headers.get('patients-id', None)
-        print('patient_id is ', patient_id)
+        user = request.user
+        user_info_instance = UserInfo.objects.get(user=user)
         if not patient_id:
             messages = {
                 'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
@@ -96,14 +109,20 @@ class PatientsRecord(APIView):
             return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            patient = Patient.objects.get(id=patient_id)
-            print('patient is ', patient)
+            patient = Patient.objects.get(id=patient_id, created_by=user_info_instance)
         except Patient.DoesNotExist:
             messages = {
                 'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
                 'message': "Patient record not found."
             }
             return JsonResponse(messages, status=status.HTTP_404_NOT_FOUND)
+        
+        if patient.created_by != user_info_instance:
+            messages = {
+                'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
+                'message': "You are not authorized to update this patient record."
+            }
+            return JsonResponse(messages, status=status.HTTP_403_FORBIDDEN)
         
         serializer = PatientsSerializer(patient, data=request.data)
         if serializer.is_valid():
@@ -124,11 +143,13 @@ class PatientsRecord(APIView):
                 'errors': serializer.errors
             }
             return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
-        
+
 
     def delete(self, request):
         """this method handle the delete the Patients records  with their id passing in the headres associated with Specific login user"""
         patient_id = request.headers.get('patients-id', None)
+        user = request.user
+        user_info_instance=UserInfo.objects.get(user=user)
         print('patient_id is ', patient_id)
         if not patient_id:
             messages = {
@@ -138,7 +159,7 @@ class PatientsRecord(APIView):
             return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            patient = Patient.objects.get(id=patient_id)
+            patient = Patient.objects.get(id=patient_id, created_by=user_info_instance)
             print('patient is ', patient)
         except Patient.DoesNotExist:
             messages = {
@@ -153,3 +174,5 @@ class PatientsRecord(APIView):
             'message': "Patient record deleted successfully."
         }
         return JsonResponse(messages, status=status.HTTP_200_OK)
+    
+
