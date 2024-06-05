@@ -42,6 +42,8 @@ media
 # IntelliJ
 out/
 
+*.debug.log
+
 # JIRA plugin
 atlassian-ide-plugin.xml
 

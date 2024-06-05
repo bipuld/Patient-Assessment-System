@@ -23,6 +23,7 @@ class PatientsRecord(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """this request handle the Creation of the Patients records associated with Specific login user"""
         if not request.data:
             messages = {
                 'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
@@ -60,6 +61,7 @@ class PatientsRecord(APIView):
 
 
     def get(self,request):
+        """this method handle the List all  of the Patients records associated with Specific login user"""
         user = request.user
         print('request.user so current user is ', user)
         try:
@@ -83,6 +85,7 @@ class PatientsRecord(APIView):
     
 
     def put(self, request):
+        """this method handle the Updating of  all  of the Patients records  with their id passing in the headres associated with Specific login user"""
         patient_id = request.headers.get('patients-id', None)
         print('patient_id is ', patient_id)
         if not patient_id:
@@ -124,6 +127,7 @@ class PatientsRecord(APIView):
         
 
     def delete(self, request):
+        """this method handle the delete the Patients records  with their id passing in the headres associated with Specific login user"""
         patient_id = request.headers.get('patients-id', None)
         print('patient_id is ', patient_id)
         if not patient_id:
