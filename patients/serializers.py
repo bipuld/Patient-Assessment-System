@@ -1,7 +1,16 @@
 from .models import Patient
 from rest_framework import serializers
 
+from .models import Clinician, Patient, Assessment
 
+class ClinicianSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source='clincal_user.user.email')
+
+    class Meta:
+        model = Clinician
+        fields = ['id', 'email']
+
+        
 class PatientsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
@@ -23,3 +32,19 @@ class PatientsSerializer(serializers.ModelSerializer):
         validated_data['created_by']=user_info
         return super().create(validated_data)
 
+
+
+class AssessmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assessment
+        fields = ['assessment_type', 'assessment_date', 'questions_and_answers', 'final_score']
+    
+    def validate(self, attrs):
+        clinician = self.context.get('clinician')
+        patient = self.context.get('patient')
+        if clinician:
+            attrs['clinician'] = clinician
+        if patient:
+            attrs['patient'] = patient
+
+        return attrs

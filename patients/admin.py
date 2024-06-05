@@ -26,8 +26,8 @@ class ClinicianAdmin(admin.ModelAdmin):
 
 @admin.register(Assessment)
 class AssessmentAdmin(admin.ModelAdmin):
-    list_display = ('assessment_type', 'patient', 'assessment_date', 'final_score')
+    list_display = ('assessment_type', 'patient', 'assessment_date', 'final_score','clinician')
     list_filter = ('assessment_type', 'assessment_date', 'clinician')
     search_fields = ('assessment_type', 'patient__full_name', 'clinician__full_name') 
-    date_hierarchy = 'assessment_date' #date_hierarchy to provide a date-based drill-down navigation for assessment_date.
+    date_hierarchy = 'assessment_date' #d ate_hierarchy to provide a date-based drill-down navigation for assessment_date.
     ordering = ('assessment_date',)

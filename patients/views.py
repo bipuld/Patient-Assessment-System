@@ -1,14 +1,26 @@
 from django.http import JsonResponse
-from rest_framework.views import APIView
 from rest_framework import status
-from .serializers import  PatientsSerializer
+from .serializers import  PatientsSerializer,ClinicianSerializer,AssessmentSerializer
 from user.models import UserInfo
-from .models import Patient
+from .models import Patient,Clinician,Assessment
 from patients_asse import global_msg
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
+from django.utils import timezone
+from rest_framework.decorators import api_view,APIView
 
-class PatientsRecord(APIView):
+
+@api_view(['GET'])
+def ClinicianGetAPI(request):
+    '''
+    Get the list of clinicians.
+    '''
+    clinicians = Clinician.objects.all()
+    # print(":clinicians",clinicians)
+    serializer = ClinicianSerializer(clinicians, many=True)
+    return JsonResponse(serializer.data, safe=False,status=status.HTTP_200_OK)
+
+class PatientsRecordApiView(APIView):
     """
     API endpoint for creating a new patient record.
     Method: POST
@@ -82,7 +94,6 @@ class PatientsRecord(APIView):
         }
         return JsonResponse(messages, status=status.HTTP_200_OK)
     
-
     def put(self, request):
         """
         Update the patient record associated with the logged-in user.
@@ -98,81 +109,175 @@ class PatientsRecord(APIView):
             - 403 FORBIDDEN: If the user is not authorized to update the patient record.
             - 404 NOT FOUND: If the patient record does not exist.
         """
-        patient_id = request.headers.get('patients-id', None)
-        user = request.user
-        user_info_instance = UserInfo.objects.get(user=user)
+        patient_id = request.headers.get('patients-id')
+        user_info_instance=UserInfo.objects.get(user=request.user)
         if not patient_id:
-            messages = {
+            return JsonResponse({
                 'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
                 'message': "Patient ID is required for updating the patient record."
-            }
-            return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
+            }, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            patient = Patient.objects.get(id=patient_id, created_by=user_info_instance)
+            patient = Patient.objects.get(id=patient_id)
         except Patient.DoesNotExist:
-            messages = {
+            return JsonResponse({
                 'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
                 'message': "Patient record not found."
-            }
-            return JsonResponse(messages, status=status.HTTP_404_NOT_FOUND)
+            }, status=status.HTTP_404_NOT_FOUND)
         
         if patient.created_by != user_info_instance:
-            messages = {
+            return JsonResponse({
                 'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
                 'message': "You are not authorized to update this patient record."
-            }
-            return JsonResponse(messages, status=status.HTTP_403_FORBIDDEN)
+            }, status=status.HTTP_403_FORBIDDEN)
         
         serializer = PatientsSerializer(patient, data=request.data)
         if serializer.is_valid():
             serializer.save() 
-            patient.updated_at = datetime.now()
+            patient.updated_at = timezone.now()
             patient.save()
 
-            messages = {
+            return JsonResponse({
                 'responseCode': global_msg.SUCCESS_RESPONSE_CODE,
                 'message': "Patient record updated successfully.",
                 'data': serializer.data
-            }
-            return JsonResponse(messages, status=status.HTTP_200_OK)
+            }, status=status.HTTP_200_OK)
         else:
-            messages = {
+            return JsonResponse({
                 'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
                 'message': "Failed to update patient record.",
                 'errors': serializer.errors
-            }
-            return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 
     def delete(self, request):
-        """this method handle the delete the Patients records  with their id passing in the headres associated with Specific login user"""
-        patient_id = request.headers.get('patients-id', None)
-        user = request.user
+        """
+        Delete the patient record associated with the logged-in user.
+
+        Method: DELETE
+        Parameters:
+            - patients-id (int): The ID of the patient record to be deleted (in headers).
+
+        Returns:
+            - 200 OK: If the patient record is deleted successfully.
+            - 400 BAD REQUEST: If patient ID is missing or data is invalid.
+            - 403 FORBIDDEN: If the user is not authorized to delete the patient record.
+            - 404 NOT FOUND: If the patient record does not exist.
+        """
+        patient_id = request.headers.get('patients-id')
+        user=request.user
         user_info_instance=UserInfo.objects.get(user=user)
-        print('patient_id is ', patient_id)
         if not patient_id:
-            messages = {
+            return JsonResponse({
                 'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
                 'message': "Patient ID is required for deleting the patient record."
-            }
-            return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
+            }, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            patient = Patient.objects.get(id=patient_id, created_by=user_info_instance)
-            print('patient is ', patient)
+            patient = Patient.objects.get(id=patient_id)
         except Patient.DoesNotExist:
-            messages = {
+            return JsonResponse({
                 'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
                 'message': "Patient record not found."
-            }
-            return JsonResponse(messages, status=status.HTTP_404_NOT_FOUND)
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        if patient.created_by != user_info_instance:
+            return JsonResponse({
+                'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
+                'message': "You are not authorized to delete this patient record."
+            }, status=status.HTTP_403_FORBIDDEN)
         
         patient.delete()
-        messages = {
+        
+        return JsonResponse({
             'responseCode': global_msg.SUCCESS_RESPONSE_CODE,
             'message': "Patient record deleted successfully."
-        }
-        return JsonResponse(messages, status=status.HTTP_200_OK)
-    
+        }, status=status.HTTP_200_OK)
 
+class AssessmentApiView(APIView):
+    """This class enables assessment CRUD operations, leveraging relationships between clinicians, patients, and user information"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+        clinician_id = request.headers.get('clinician-id')
+        user=request.user
+        patient_id = request.headers.get('patient-id')
+
+        if not clinician_id or not patient_id:
+            return JsonResponse({
+                'responseCode': '400',
+                'message': 'Failed to create assessment record.',
+                'errors': {
+                    'clinician': ['Clinician ID is required.'],
+                    'patient': ['Patient ID is required.']
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:   
+            clinician = Clinician.objects.get(id=clinician_id)
+            patient = Patient.objects.get(id=patient_id, created_by=clinician.clincal_user)
+        except Clinician.DoesNotExist:
+            return JsonResponse({
+                'responseCode': '404',
+                'message': 'Clinician record not found.'
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Patient.DoesNotExist:
+            return JsonResponse({
+                'responseCode': '404',
+                'message': 'Patient record not found or not associated with the specified clinician.'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        
+        serializer = AssessmentSerializer(data=request.data,context={'clinician': clinician, 'patient': patient})
+        # print(serializer)
+        # serializer = AssessmentSerializer(data=request.data)
+        if serializer.is_valid():
+            # Save the assessment record with associated clinician and patient
+            # print('serialzers',serializer)
+            serializer.save()
+            return JsonResponse({
+                'responseCode': '200',
+                'message': f'Assessment record created successfully for patient: {patient.full_name} and clinician: {clinician.clincal_user.user.username}'
+            }, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse({
+                'responseCode': '400',
+                'message': 'Failed to create assessment record.',
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        # Get filter parameters from query parameters
+        assessment_type = request.query_params.get('assessment_type')
+        assessment_date = request.query_params.get('assessment_date')
+        patient_id = request.query_params.get('patient_id')
+        clinician_id = request.headers.get('clinician-id')
+
+        print('assessment_type',assessment_type)
+        print('assessment_date',assessment_date)
+        print('patient_id',patient_id)
+        # Create a base queryset
+        assessments = Assessment.objects.filter(clinician_id=clinician_id)
+        print('assessments',assessments)
+
+        # Apply additional filters
+        if assessment_type:
+            assessments = assessments.filter(assessment_type=assessment_type)
+            print('assessments 1',assessments)
+
+        if assessment_date:
+            assessments = assessments.filter(assessment_date=assessment_date)
+            print('assessments 2',assessments)
+
+        if patient_id:
+            assessments = assessments.filter(patient=patient_id).order_by('-assessment_date')
+            print('assessments 3',assessments)
+
+        # Serialize the filtered assessments
+        serializer = AssessmentSerializer(assessments, many=True)
+
+        return JsonResponse({
+            'responseCode': global_msg.SUCCESS_RESPONSE_CODE,
+            'message': 'Assessment records fetched successfully.',
+            'data': serializer.data
+        }, status=status.HTTP_200_OK)

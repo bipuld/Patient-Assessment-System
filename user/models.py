@@ -24,6 +24,6 @@ class UserInfo(models.Model):
         
     def __str__(self):
         if self.user:
-            return f"{self.user.id}- {self.first_name} {self.last_name}- {self.user.email}"
+            return f"{self.user.id} - {self.first_name}- {self.user.email}"
         else:
             return "Anonymous User"

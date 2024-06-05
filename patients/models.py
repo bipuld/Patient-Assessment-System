@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from user.models import UserInfo
 from ckeditor.fields import RichTextField
+
+
+
 class Patient(models.Model):
     GENDER_CHOICES = [
         ('male', 'Male'),
@@ -29,18 +32,20 @@ class Patient(models.Model):
 class Clinician(models.Model):
     clincal_user= models.OneToOneField(UserInfo, on_delete=models.CASCADE)
     def __str__(self):
-        return self.clincal_user.user.username
+        return f"{self.id} {self.clincal_user.user.username}"
+
 
 class Assessment(models.Model):
     clinician = models.ForeignKey(Clinician, on_delete=models.CASCADE)
     assessment_type = models.CharField(max_length=100)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     assessment_date = models.DateField()
-    questions_and_answers = RichTextField()
+    # questions_and_answers = RichTextField()
+    questions_and_answers =  models.TextField()
     final_score = models.FloatField()
     class Meta:
         verbose_name = "Assessment"
         verbose_name_plural = "Assessments"
-    
+
     def __str__(self):
-        return f"{self.assessment_type} for {self.patient.full_name}-{self.assessment_date}"
+        return f"{self.assessment_type}  {self.patient.full_name}-{self.assessment_date}"
