@@ -2,12 +2,11 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework import status
 from .serializers import  PatientsSerializer
-from .models import UserInfo
+from user.models import UserInfo
+from .models import Patient
 from patients_asse import global_msg
 from rest_framework.permissions import IsAuthenticated
-
-
-
+from datetime import datetime
 
 class PatientsRecord(APIView):
     """
@@ -58,3 +57,95 @@ class PatientsRecord(APIView):
             'errors': serializer.errors
         }
         return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def get(self,request):
+        user = request.user
+        print('request.user so current user is ', user)
+        try:
+            user_info_instance = UserInfo.objects.get(user=user)
+            print('User info so current user is ', user_info_instance)
+        except UserInfo.DoesNotExist:
+            messages = {
+                'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
+                'message': "User profile not found."
+            }
+            return JsonResponse(messages, status=status.HTTP_404_NOT_FOUND)
+        
+        patients = Patient.objects.filter(created_by=user_info_instance).order_by('-created_date')
+        serializer = PatientsSerializer(patients, many=True)
+        messages = {
+            'responseCode': global_msg.SUCCESS_RESPONSE_CODE,
+            'message': "Patient records fetched successfully.",
+            'data': serializer.data
+        }
+        return JsonResponse(messages, status=status.HTTP_200_OK)
+    
+
+    def put(self, request):
+        patient_id = request.headers.get('patients-id', None)
+        print('patient_id is ', patient_id)
+        if not patient_id:
+            messages = {
+                'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
+                'message': "Patient ID is required for updating the patient record."
+            }
+            return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            patient = Patient.objects.get(id=patient_id)
+            print('patient is ', patient)
+        except Patient.DoesNotExist:
+            messages = {
+                'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
+                'message': "Patient record not found."
+            }
+            return JsonResponse(messages, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = PatientsSerializer(patient, data=request.data)
+        if serializer.is_valid():
+            serializer.save() 
+            patient.updated_at = datetime.now()
+            patient.save()
+
+            messages = {
+                'responseCode': global_msg.SUCCESS_RESPONSE_CODE,
+                'message': "Patient record updated successfully.",
+                'data': serializer.data
+            }
+            return JsonResponse(messages, status=status.HTTP_200_OK)
+        else:
+            messages = {
+                'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
+                'message': "Failed to update patient record.",
+                'errors': serializer.errors
+            }
+            return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    def delete(self, request):
+        patient_id = request.headers.get('patients-id', None)
+        print('patient_id is ', patient_id)
+        if not patient_id:
+            messages = {
+                'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
+                'message': "Patient ID is required for deleting the patient record."
+            }
+            return JsonResponse(messages, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            patient = Patient.objects.get(id=patient_id)
+            print('patient is ', patient)
+        except Patient.DoesNotExist:
+            messages = {
+                'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
+                'message': "Patient record not found."
+            }
+            return JsonResponse(messages, status=status.HTTP_404_NOT_FOUND)
+        
+        patient.delete()
+        messages = {
+            'responseCode': global_msg.SUCCESS_RESPONSE_CODE,
+            'message': "Patient record deleted successfully."
+        }
+        return JsonResponse(messages, status=status.HTTP_200_OK)
