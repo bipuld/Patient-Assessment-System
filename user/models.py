@@ -21,7 +21,7 @@ class UserInfo(models.Model):
             return f"{self.user.first_name} {self.user.last_name}"
         else:
             return None
-
+        
     def __str__(self):
         if self.user:
             return f"{self.user.id}- {self.first_name} {self.last_name}"

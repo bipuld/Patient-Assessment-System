@@ -1,8 +1,6 @@
 import json
 import logging
 
-
-
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -31,8 +29,6 @@ from rest_framework import status
 from .models import UserInfo
 from .serializers import UserInfoSerializer
 from django.contrib.auth.models import User
-
-
 
 
 logger=logging.getLogger('django')
@@ -79,7 +75,7 @@ def signup(request):
         user_info_serializer.save(user=user)  # Pass the user instance to associate with UserInfo
         return JsonResponse({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
     else:
-        user.delete()  # If UserInfo creation fails, delete the user instance to maintain data integrity
+        user.delete()  # If UserInfo creation fails, it delete the user instance to maintain data integrity
         return JsonResponse(user_info_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginApiView(APIView):
@@ -100,7 +96,7 @@ class LoginApiView(APIView):
         - JsonResponse: JSON response with user data or error message.
         """
         try:
-            username = request.data['username'].lower()
+            username = request.data['email'].lower()
             password = request.data['password']
         except KeyError as e:
             messages = {

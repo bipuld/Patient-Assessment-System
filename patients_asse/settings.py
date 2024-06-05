@@ -29,7 +29,8 @@ INSTALLED_APPS = [
 
 ]
 EXTERNAL_APPS = [
-    'user'
+    'user',
+    'patients',
 ]
 INSTALLED_APPS.extend(EXTERNAL_APPS)
 
