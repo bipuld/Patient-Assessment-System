@@ -5,7 +5,6 @@ from .models import Clinician, Patient, Assessment
 
 class ClinicianSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='clincal_user.user.email')
-
     class Meta:
         model = Clinician
         fields = ['id', 'email']
@@ -35,9 +34,18 @@ class PatientsSerializer(serializers.ModelSerializer):
 
 
 class AssessmentSerializer(serializers.ModelSerializer):
+    clinician_id = serializers.SerializerMethodField()
+    patient_id = serializers.SerializerMethodField()
     class Meta:
         model = Assessment
-        fields = ['assessment_type', 'assessment_date', 'questions_and_answers', 'final_score','clinician','patient']
+        fields = ['assessment_type', 'assessment_date', 'questions_and_answers', 'final_score','clinician_id', 'patient_id']
+
+
+    def get_clinician_id(self, obj):
+        return obj.clinician.id if obj.clinician else None
+
+    def get_patient_id(self, obj):
+        return obj.patient.id if obj.patient else None
     
     def validate(self, attrs):
         clinician = self.context.get('clinician')

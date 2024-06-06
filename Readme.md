@@ -26,6 +26,18 @@ The project follows a structured approach to effectively manage user profiles an
 #### Patients
 - **Patients Management:** `GET/POST/PUT/DELETE /patients/` - CRUD operations for managing patient records.
 
+### Assessment 
+- **Assessment Management:** `GET/POST/PUT/DELETE /patients/api/assessment/` - CRUD operations for managing patient records.
+
+### Getting all the Clincian Available in Our Record 
+- **Clincian Record:** '`GET /patients/api/ListClinician/` - Getting all the Clinician Data available in our record
+
+### Getting Specific Patients data with their specific clincian  
+- **Clincian Record:** '`GET /patients/api/patient-clinician/` - Getting all the Patients data of Specific clinican (if it is created with that user )
+
+
+
+
 ## Description
 This project provides setup instructions for local development.
 
@@ -41,7 +53,6 @@ This project provides setup instructions for local development.
 7. **Create Admin User**: `python manage.py createsuperuser`
 
 ## Contributing
-Contributions are welcome! Refer to CONTRIBUTING.md for guidelines.
+
 
 ## License
-Th

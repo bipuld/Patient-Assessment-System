@@ -25,7 +25,6 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework import status
 from .models import UserInfo
-from .serializers import UserInfoSerializer
 from django.contrib.auth.models import User
 
 
@@ -35,17 +34,15 @@ logger=logging.getLogger('django')
 def signup(request):
     """
     API endpoint for user signup.
-
     Method: POST
     Parameters:
-        - gender (str): The gender of the user. (Optional)
-        - phone (str): The user's phone number. (Optional)
-        - first_name (str): The user's first name. (Required)
-        - last_name (str): The user's last name. (Required)
-        - email (str): The user's email address. (Required)
-        - password (str): The user's password. (Required)
+        - gender (str): The gender of the user. 
+        - phone (str): The user's phone number. 
+        - first_name (str): The user's first name. 
+        - last_name (str): The user's last name. 
+        - email (str): The user's email address. 
+        - password (str): The user's password. 
         - is_verify (bool): Whether the user's account is verified. (Optional, defaults to False)
-
     Returns:
         Response object with JSON data:
             - success message on successful creation (status: 201)
@@ -67,10 +64,10 @@ def signup(request):
     except IntegrityError:
         return JsonResponse({'error': 'User with this email already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Create UserInfo instance using serializer
+
     user_info_serializer = UserInfoSerializer(data=request.data)
     if user_info_serializer.is_valid():
-        user_info_serializer.save(user=user)  # Pass the user instance to associate with UserInfo
+        user_info_serializer.save(user=user)  
         return JsonResponse({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
     else:
         user.delete()  # If UserInfo creation fails, it delete the user instance to maintain data integrity
@@ -78,7 +75,7 @@ def signup(request):
 
 class LoginApiView(APIView):
     """
-    API endpoint for user login.
+    API endpoint for user login. This allow us to Login the user.
     """
     permission_classes = [AllowAny]
 
@@ -91,7 +88,7 @@ class LoginApiView(APIView):
         - password (str): The password of the user.
 
         Returns:
-        - JsonResponse: JSON response with user data or error message.
+        - JsonResponse: JSON response with user data (username , refresh_token,access_token )or error message.
         """
         try:
             username = request.data['email'].lower()
@@ -131,6 +128,8 @@ class LoginApiView(APIView):
 class LogoutApiView(APIView):
     """
     API endpoint for user logout.
+    This allow us to logout the user so to logout the authenticating user 
+    acess_token of specific user is Authorization :In Bearer Token of Auth_type the acess_token is used to authenticate specific user throgh request.user .
     """
     permission_classes = [IsAuthenticated]
     def post(self, request):
@@ -176,6 +175,7 @@ class LogoutApiView(APIView):
 class GetUserProfile(APIView):
     """
     API endpoint for retrieving user profile.
+    From the login Api:acess_token of specific user is Authorization :In Bearer Token of Auth_type the acess_token is used to authenticate specific user throgh request.user .
     """
     permission_classes = [IsAuthenticated]
 
