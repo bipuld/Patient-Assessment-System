@@ -7,11 +7,13 @@ from patients_asse import global_msg
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
 from django.utils import timezone
-from rest_framework.decorators import api_view,APIView
+from django.core.paginator import Paginator , EmptyPage, PageNotAnInteger
+from rest_framework.decorators import api_view,APIView,permission_classes
 
 
 @api_view(['GET'])
-def ClinicianGetAPI(request):
+@permission_classes([IsAuthenticated])
+def ClinicianListAPI(request):
     '''
     Get the list of clinicians.
     '''
@@ -19,6 +21,51 @@ def ClinicianGetAPI(request):
     # print(":clinicians",clinicians)
     serializer = ClinicianSerializer(clinicians, many=True)
     return JsonResponse(serializer.data, safe=False,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def PatientGetClincianAPI(request):
+    """
+    Get the patients associated with the clinician that is linked to the authenticated user.
+    """
+    user = request.user
+    response_data = {
+        'clinician_id': None,
+        'clinician_user_id': None,
+        'patients': []
+    }
+
+
+    try:
+        user_info_instance = UserInfo.objects.get(user=user)
+    except UserInfo.DoesNotExist:
+        return JsonResponse({
+            'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
+            'message': "User profile not found."
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        clinician = Clinician.objects.get(clincal_user=user_info_instance)
+        response_data['clinician_id'] = clinician.id
+        response_data['clinician_user_id'] = clinician.clincal_user.user.id
+
+    except Clinician.DoesNotExist:
+        return JsonResponse({
+            'responseCode': global_msg.UNSUCCESS_RESPONSE_CODE,
+            'message': "Clinician record not found"
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    patients = Patient.objects.filter(created_by=clinician.clincal_user).order_by('-created_date') 
+    for patient in patients:
+        response_data['patients'].append({
+            'id': patient.id,
+            'full_name': patient.full_name,
+            'phone_number': patient.phone_number,
+            'date_of_birth': patient.date_of_birth,
+            'address': patient.address
+        })
+
+    return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
 
 class PatientsRecordApiView(APIView):
     """
@@ -247,7 +294,7 @@ class AssessmentApiView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        # Get filter parameters from query parameters
+        # Getting filter parameters from query parameters
         assessment_type = request.query_params.get('assessment_type')
         assessment_date = request.query_params.get('assessment_date')
         patient_id = request.query_params.get('patient_id')
@@ -256,11 +303,11 @@ class AssessmentApiView(APIView):
         print('assessment_type',assessment_type)
         print('assessment_date',assessment_date)
         print('patient_id',patient_id)
-        # Create a base queryset
-        assessments = Assessment.objects.filter(clinician_id=clinician_id)
+  
+        assessments = Assessment.objects.filter(clinician_id=clinician_id).order_by('assessment_date')
         print('assessments',assessments)
 
-        # Apply additional filters
+ 
         if assessment_type:
             assessments = assessments.filter(assessment_type=assessment_type)
             print('assessments 1',assessments)
@@ -270,11 +317,23 @@ class AssessmentApiView(APIView):
             print('assessments 2',assessments)
 
         if patient_id:
-            assessments = assessments.filter(patient=patient_id).order_by('-assessment_date')
+            assessments = assessments.filter(patient=patient_id)
             print('assessments 3',assessments)
 
-        # Serialize the filtered assessments
-        serializer = AssessmentSerializer(assessments, many=True)
+        paginator = Paginator(assessments,2)
+        page_num = request.query_params.get('page')
+        # print('page_num',page_num)
+
+        try:
+            paginated_assessments = paginator.page(page_num)
+        except PageNotAnInteger: #IF page quesry is not integer then it give first page 
+            paginated_assessments = paginator.page(1)
+        except EmptyPage: # page is out of range (e.g. 9999), deliver last page of results.
+            paginated_assessments = paginator.page(paginator.num_pages)
+
+               
+       
+        serializer = AssessmentSerializer(paginated_assessments, many=True)
 
         return JsonResponse({
             'responseCode': global_msg.SUCCESS_RESPONSE_CODE,

@@ -37,7 +37,7 @@ class PatientsSerializer(serializers.ModelSerializer):
 class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assessment
-        fields = ['assessment_type', 'assessment_date', 'questions_and_answers', 'final_score']
+        fields = ['assessment_type', 'assessment_date', 'questions_and_answers', 'final_score','clinician','patient']
     
     def validate(self, attrs):
         clinician = self.context.get('clinician')

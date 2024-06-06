@@ -87,8 +87,7 @@ DATABASES = {
         'PORT': '3306',  # Configured MySql Port
     }
 }
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -106,8 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
+
 
 LANGUAGE_CODE = 'en-us'
 
@@ -117,9 +115,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Location where collectstatic will place static files for production
@@ -131,9 +126,6 @@ STATICFILES_DIRS = [
 
 
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_URL = 'static/'
@@ -143,13 +135,18 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# REST Framework settings for JWT
 
+# REST Framework settings for JWT
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    # Paginator Setting for REST API
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 2, 
 }
+
+
 # Configuration for Simple JWT tokens
 SIMPLE_JWT = {
     # Lifetime of access tokens
@@ -161,8 +158,8 @@ SIMPLE_JWT = {
 
 
 
-# This logging setting will creat
-# e a debug.log file in the root directory of the project.
+
+# This logging setting will create a debug.log file in the root directory of the project.
 
 LOGGING = {
     'version': 1,
