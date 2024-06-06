@@ -8,7 +8,8 @@ media
 activate.bat    
 static/
 debug.log
-
+activate
+debug
 # Backup files # 
 *.bak 
 
