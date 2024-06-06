@@ -44,4 +44,4 @@ This project provides setup instructions for local development.
 Contributions are welcome! Refer to CONTRIBUTING.md for guidelines.
 
 ## License
-This project is licensed under the [MIT License](link-to-license).
+Th

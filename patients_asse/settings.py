@@ -7,9 +7,10 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = 'django-insecure-7x1w@)0aw2_*4x!pbbxw880=k*zg0nn*r!i@l#qjnt0jgv9kn9'
 
-DEBUG = config('DEBUG', default=True, cast=bool)
+# DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -80,9 +81,9 @@ WSGI_APPLICATION = 'patients_asse.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME'),
+        'NAME':'patients_asse',
         'USER': 'root',
-        "PASSWORD":config('DB_PASSWORD'),
+        "PASSWORD":'root12',
         'HOST': 'localhost',
         'PORT': '3306',  # Configured MySql Port
     }
