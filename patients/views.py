@@ -103,12 +103,6 @@ class PatientsRecordApiView(APIView):
     API endpoint for creating a new patient record.
     From the login Api:acess_token of specific user is Authorization :In Bearer Token of Auth_type the acess_token is used to authenticate specific user throgh request.user .
     Method: POST,GET,PUT,DELETE
-    Parameters (JSON Body) for POST request:
-        - full_name (str): The patient's full name. (Required)
-        - gender (str): The patient's gender. (Required)
-        - phone_number (str): The patient's phone number. (Required) :Phone number should be unique
-        - date_of_birth (str): The patient's date of birth (YYYY-MM-DD). (Required)
-        - address (str): The patient's address. (Required)
     """
     permission_classes = [IsAuthenticated]
 
@@ -175,19 +169,9 @@ class PatientsRecordApiView(APIView):
     def put(self, request):
         """
         Update the patient record associated with the logged-in user .
-        here validation is done by the if the Patient record is created by the same user who is updating the record.
-        otherwise it will give the error message .
-
-        Method: PUT
-        Parameters:
-            - patients-id (int): The ID of the patient record to be updated (in headers).
-            - Full Patient Record (JSON Body): The updated patient record data.
-
-        Returns:
-            - 200 OK: If the patient record is updated successfully.
-            - 400 BAD REQUEST: If patient ID is missing or data is invalid.
-            - 403 FORBIDDEN: If the user is not authorized to update the patient record.
-            - 404 NOT FOUND: If the patient record does not exist.
+        Here validation is done by the if the Patient record is created by the same user who is updating the record.
+        otherwise it will give the error message
+     
         """
         patient_id = request.headers.get('patients-id')
         user_info_instance=UserInfo.objects.get(user=request.user)
@@ -233,17 +217,7 @@ class PatientsRecordApiView(APIView):
     def delete(self, request):
         """
         Delete the patient record associated with the logged-in user.
-        validation :- the Patient record that is  created by the same user can be only able to deleting that record.
-
-        Method: DELETE
-        Parameters:
-            - patients-id (int): The ID of the patient record to be deleted (in headers).
-
-        Returns:
-            - 200 OK: If the patient record is deleted successfully.
-            - 400 BAD REQUEST: If patient ID is missing or data is invalid.
-            - 403 FORBIDDEN: If the user is not authorized to delete the patient record.
-            - 404 NOT FOUND: If the patient record does not exist.
+        validation :- the Patient record that is created by the same user can be only able to deleting that record.
         """
         patient_id = request.headers.get('patients-id')
         user=request.user
@@ -339,6 +313,7 @@ class AssessmentApiView(APIView):
 
     def get(self, request):
         # Getting filter parameters from query parameters
+        # API endpoints look like for filterinng with pagination patients/api/assessment/?page=1&&assessment_date=2024-06-06&&patient_id=7
         assessment_type = request.query_params.get('assessment_type')
         assessment_date = request.query_params.get('assessment_date')
         patient_id = request.query_params.get('patient_id')

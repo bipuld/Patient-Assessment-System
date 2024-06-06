@@ -19,7 +19,7 @@ class PatientsSerializer(serializers.ModelSerializer):
 
     def validate_phone_number(self, value):
         """
-        Check if the phone number already exists in the database.
+        Check if the phone number already exists in the our record.
         """
         if Patient.objects.filter(phone_number=value).exists():
             raise serializers.ValidationError("Phone number already exists.")

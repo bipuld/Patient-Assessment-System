@@ -85,10 +85,9 @@ class LoginApiView(APIView):
         Method: POST
         Parameters:
         - username (str): The username of the user.
-        - password (str): The password of the user.
-
+        - password (str): The password of the user.=
         Returns:
-        - JsonResponse: JSON response with user data (username , refresh_token,access_token )or error message.
+        - JsonResponse: JSON response with user data (username , refresh_token,access_token )orerror message.
         """
         try:
             username = request.data['email'].lower()
