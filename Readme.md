@@ -25,8 +25,8 @@ The project follows a structured approach to effectively manage patient records 
 ## Assumptions made during this development of Patients Assessment System.
 some of them are mentions below:
 
-1.Data entry done by the clinical user for the patient should be consistent. T
-2.The system assumes that the patients’ records are updated regularly with thier correct information. 
+1.Data entry done by the clinical user for the patient should be consistent.
+2.The system assumes that the patient’s records are updated regularly with thier correct information. 
 3.This system assumes that all users will not violate data privacy regulations and will not misuse patient information. 
 4.The system assumes that a stable and good internet connection is available to maintain and access records without any breakage. 
 5.Data integrity should be handled by the user. 
@@ -87,3 +87,64 @@ This project provides setup instructions for local development.
 5. **Apply Migrations**: `python manage.py makemigrations` && `python manage.py migrate`
 6. **Run Development Server**: `python manage.py runserver`
 7. **Create Admin User**: `python manage.py createsuperuser` for admin panel
+
+
+## Process of Deploymnet of AWS 
+Requirments to deploy project on AWS EC2
+Django project
+Github account (project in repo)
+AWS account
+Purchased domain
+cloudfare account
+
+Using the Linux based OS + Postgres, Nginx, and Gunicorn 
+
+
+Here are some phase that fall under the deploymnet of Django Web App on the AWS EC2
+1.Django-Github
+2.Github
+3.AWS AC
+4.Domain
+5.Cloudfare
+6.Setup SSL
+7.Testing
+
+Phase-1 and phase - 2
+Ready our project django for deployment,In my project our system is ready then push to github account
+
+phase-3 
+1.In the AWS account,Create one instances with diffrent configuration such as OS,crete also key-pair (.pem) i.e  download in the 
+local storage and other configuration like allows Https and Https 
+2.Now instance is created on AWS and connect it and also using cmd we have to change the permission of the (.pem) save file 
+then using cmd given after connecting with instances.
+3.We have to  use that cmd(in the directory of the .pem file ) to access our ubuntu server in locally cmd after updiang all package now clone the git project by using git clone ,make virtualenv ,activate it using bash $ source env/bin/activate ,install requirmentes.txt with cmd 
+then in our server the project is ready 
+4.Now Using postgres(As I choose ) i have to install some package on that server using cmd on documentation 
+-- sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx
+5.Install Gunicorn package on the project
+6.Run python manage.py makemigrations and python manage.py migrate
+7.python manage.py runserver if everything works good then move go further
+8.Creating System Socket & Service for Gunicorn with cmd provided on documentaion of hosting platform (
+Such that:
+https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04
+) or any user perferences
+9.Configure Nginx to Proxy pass to Gunicorn (connecting the Nginx to Gunicorn)
+10.Now, Project is ready and hosted in IP provided on the instances on the AWS
+
+phase-4
+1.Used a Route53 on AWS (To create a route between Ip and domain)
+2.Configure with that ,with creating a hosting zone
+3.We have to create a diffrent record with type A and another with CNAM
+4.In above config we have got a DNS which we have to change in the domian provider site,
+(If i used on the godaddy)
+
+phase -5 , phase -6 and phase -7
+1.In domain to cloudfare phase (It allows us to used HTTP service)
+2.On the cloudfare account used your website-domain (you buy)
+3.Then it provied the new dns,changed it to domain provider website(such as godaddy)
+4.On the Testing ,We have to check does it working on https securely or not (if not we have to wait for some confirmation,mail or any messages from provider,AWS  )
+5.Lastly ,Our project is deployed on the production level 
+By using this following method I can deployed this porject on AWS
+
+
+

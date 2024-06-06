@@ -1,0 +1,11 @@
+2024-06-06 23:59:15,527 INFO Watching for file changes with StatReloader 668 
+2024-06-06 23:59:20,296 INFO "GET /admin/patients/assessment/4/change/ HTTP/1.1" 200 15739 212 
+2024-06-06 23:59:20,343 INFO "GET /admin/jsi18n/ HTTP/1.1" 200 3342 212 
+2024-06-06 23:59:20,511 INFO "GET /static/admin/js/collapse.js HTTP/1.1" 200 1803 212 
+2024-06-06 23:59:20,512 INFO "GET /static/admin/js/calendar.js HTTP/1.1" 200 9141 212 
+2024-06-06 23:59:21,830 INFO "GET /admin/patients/clinician/ HTTP/1.1" 200 11454 212 
+2024-06-06 23:59:21,867 INFO "GET /admin/jsi18n/ HTTP/1.1" 200 3342 212 
+2024-06-06 23:59:23,019 INFO "GET /admin/patients/patient/ HTTP/1.1" 200 14610 212 
+2024-06-06 23:59:23,053 INFO "GET /admin/jsi18n/ HTTP/1.1" 200 3342 212 
+2024-06-06 23:59:23,573 INFO "GET /admin/patients/assessment/ HTTP/1.1" 200 16049 212 
+2024-06-06 23:59:23,604 INFO "GET /admin/jsi18n/ HTTP/1.1" 200 3342 212 
