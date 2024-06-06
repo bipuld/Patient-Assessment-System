@@ -113,7 +113,7 @@ Phase-1 and phase - 2
 Ready our project django for deployment,In my project our system is ready then push to github account
 
 phase-3 
-1.In the AWS account,Create one instances with diffrent configuration such as OS,crete also key-pair (.pem) i.e  download in the 
+1.In the AWS account,Create one instances with diffrent configuration such as OS,create also key-pair (.pem) i.e  download in the 
 local storage and other configuration like allows Https and Https 
 2.Now instance is created on AWS and connect it and also using cmd we have to change the permission of the (.pem) save file 
 then using cmd given after connecting with instances.
