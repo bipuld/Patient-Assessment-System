@@ -24,7 +24,6 @@ The project follows a structured approach to effectively manage patient records 
 
 ## Assumptions made during this development of Patients Assessment System.
 some of them are mentions below:
-
 1.Data entry done by the clinical user for the patient should be consistent.
 2.The system assumes that the patient’s records are updated regularly with thier correct information. 
 3.This system assumes that all users will not violate data privacy regulations and will not misuse patient information. 
@@ -35,7 +34,7 @@ some of them are mentions below:
 Challenges faced during development Process:
 1.Multi-Tenancy Features: 
 Problem: I faced issues with how to enable multiple clinicians to maintain records seamlessly without any loopholes. 
-Solution: The solution was achieved by designing the architecture of the database to work easily. Different clinicians can have relationships with patients. Through logical thinking about their relationship and testing multiple times, I met that solution . 
+Solution: The solution was achieved by designing the architecture of the database to work easily. Different clinicians can have relationships with patients.Through logical thinking about their relationship and testing multiple times, I met that solution . 
 
 2.Deployment Process to AWS: 
 Problem: I faced issues during the deployment process phase to write. 
@@ -115,40 +114,51 @@ Here are some phase that fall under the deploymnet of Django Web App on the AWS 
 Ready our project django for deployment,In my project our system is ready then push to github account
 
 ### phase 3 : AWS EC2 (setup):
-1.In the AWS account,Create one instances with diffrent configuration such as OS,create also key-pair (.pem) i.e  download in the 
-local storage and other configuration like allows Https and Https 
-2.Now instance is created on AWS and connect it and also using cmd we have to change the permission of the (.pem) save file 
-then using cmd given after connecting with instances.
-3.We have to  use that cmd(in the directory of the .pem file ) to access our ubuntu server in locally cmd after updiang all package now clone the git project by using git clone ,make virtualenv ,activate it using bash $ source env/bin/activate ,install requirmentes.txt with cmd 
-then in our server the project is ready 
-4.Now Using postgres(As I choose ) i have to install some package on that server using cmd on documentation 
--- sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx
-5.Install Gunicorn package on the project
-6.Run python manage.py makemigrations and python manage.py migrate
-7.python manage.py runserver if everything works good then move go further
-8.Creating System Socket & Service for Gunicorn with cmd provided on documentaion of hosting platform (
-Such that:
-https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04
-) or any user perferences
-9.Configure Nginx to Proxy pass to Gunicorn (connecting the Nginx to Gunicorn)
-10.Now, Project is ready and hosted in IP provided on the instances on the AWS
+1. **Creating a AWS instance** 
+    - In the AWS account,Create one instances with diffrent configuration such as OS,create also key-pair (.pem)
+    - Download in the local storage and other configuration like allows Https and Https 
+    - Now instance is created on AWS and connect it and also using cmd we have to change the permission of the (.pem) save file then using cmd given after connecting with instances.
+    - We have to  use that cmd(in the directory of the .pem file ) to access our ubuntu server in locally cmd after updiang all package now.  - Clone the git project by using git clone ,make virtualenv ,activate it using bash $ source env/bin/activate ,install requirmentes.txt with cmd 
+    - Then in our server the project is ready 
+2. **Setup Postgres** 
+    - Now Using postgres(As I choose ) i have to install some package on that server using cmd on documentation 
+    -- sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx
+3. **Install Gunicorn on project** 
+    - Install Gunicorn package on the project
+4. **Migrate Database**
+    - Run python manage.py makemigrations and python manage.py migrate.
+5. **Testing on server**
+    - Running python manage.py runserver if everything works good then go further step 
+6. **Configure Gunincorn**
+    - Creating System Socket & Service for Gunicorn with cmd provided on documentaion of hosting platform (Such that:https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04) or any user perferences
+7. **Configure Nginx**
+    - Configure Nginx to Proxy pass to Gunicorn (connecting the Nginx to Gunicorn)
+8. **Start and Restart Service of Gunicorn**
+    - Now, Project is ready and hosted in IP provided on the instances on the AWS
 
-### phase 4 : Domain Configuration with Route53
-1.Used a Route53 on AWS (To create a route between Ip and domain)
-2.Configure with that ,with creating a hosting zone
-3.We have to create a diffrent record with type A and another with CNAM
-4.In above config we have got a DNS which we have to change in the domian provider site,
-(In my case I should used godaddy domain provider)
+### phase 4 : Domain Configuration with Route53:
+1. **Setup Route53 on AWS**
+    - Used a Route53 on AWS (To create a route between Ip and domain)
+    - Configure with that ,with creating a hosting zone
+    - We have to create a diffrent record with type A and another with CNAM
+2. **Update DomainDNS**
+    -   In above config we have got a DNS which we have to change in the domian provider site,(In my case I should used godaddy domain  provider)
 
 ### phase 5 and phase 6: Configure Cloudfare for SSL 
-1.In domain to cloudfare phase (It allows us to used HTTP service)
-2.On the cloudfare account used your website-domain (you buy)
-3.Then it provied the new dns,changed it to domain provider website(such as godaddy)
+1. **Clodfare Configuration**
+    - In domain to cloudfare phase (It allows us to used HTTP service)
+    - On the cloudfare account used your website-domain (you buy)
+    - Then it provied the new dns,changed it to domain provider website(such as godaddy)
+2. **Enable HTTPS**
+    - Check the HTTPS mode to Full or Strict or Flexible (I will use Flexible)
 
 ### Phase 7 :Testing
-1.On the Testing ,We have to check does it working on https securely or not (if not we have to wait for some confirmation,mail or any messages from provider,AWS  )
-2..Lastly ,Our project is deployed on the production level 
-By using this following method I can deployed this porject on AWS
+1. **Testing on Deployment**
+    - On the Testing ,We have to check does it working on https securely or not (if not we have to wait for some confirmation,mail or any     messages from provider,AWS  )
+    - Lastly ,Our project is deployed on the production level
+
+## Conclusion 
+By using this following method I can deployed this project on AWS EC2 (Amazon Web Service Elastic Compute Cloud)
 
 
 
