@@ -89,17 +89,19 @@ This project provides setup instructions for local development.
 7. **Create Admin User**: `python manage.py createsuperuser` for admin panel
 
 
-## Process of Deploymnet of AWS 
-Requirments to deploy project on AWS EC2
-Django project
-Github account (project in repo)
-AWS account
-Purchased domain
-cloudfare account
+## Process of Deploymnet of Django Project on  AWS EC2
 
-Using the Linux based OS + Postgres, Nginx, and Gunicorn 
+This guide thorugh Deploying a django project on AWS EC2 using (Ubuntu + Postgres database ,Nginx and Gunicorn )
+Requirments to deploy project on AWS EC2:-
+1. **Django project**: Should have django project to host on AWS EC2
+2. **Github account** (project in repo) : Should have Githhub account and also must have repo consits of django project 
+3. **AWS account** :AWS account should be created for handling instances
+4. **Purchased domain** :Should have the domain purchased from the domain provider site.
+5. **Cloudfare account** : For Using DNS provided by cloudfare in the domian provider and SSL setup
 
 
+
+## Deployment Phases
 Here are some phase that fall under the deploymnet of Django Web App on the AWS EC2
 1.Django-Github
 2.Github
@@ -109,10 +111,10 @@ Here are some phase that fall under the deploymnet of Django Web App on the AWS 
 6.Setup SSL
 7.Testing
 
-Phase-1 and phase - 2
+### Phase 1 and phase 2 : Setup Django project and Push to Github
 Ready our project django for deployment,In my project our system is ready then push to github account
 
-phase-3 
+### phase 3 : AWS EC2 (setup):
 1.In the AWS account,Create one instances with diffrent configuration such as OS,create also key-pair (.pem) i.e  download in the 
 local storage and other configuration like allows Https and Https 
 2.Now instance is created on AWS and connect it and also using cmd we have to change the permission of the (.pem) save file 
@@ -131,20 +133,23 @@ https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postg
 9.Configure Nginx to Proxy pass to Gunicorn (connecting the Nginx to Gunicorn)
 10.Now, Project is ready and hosted in IP provided on the instances on the AWS
 
-phase-4
+### phase 4 : Domain Configuration with Route53
 1.Used a Route53 on AWS (To create a route between Ip and domain)
 2.Configure with that ,with creating a hosting zone
 3.We have to create a diffrent record with type A and another with CNAM
 4.In above config we have got a DNS which we have to change in the domian provider site,
-(If i used on the godaddy)
+(In my case I should used godaddy domain provider)
 
-phase -5 , phase -6 and phase -7
+### phase 5 and phase 6: Configure Cloudfare for SSL 
 1.In domain to cloudfare phase (It allows us to used HTTP service)
 2.On the cloudfare account used your website-domain (you buy)
 3.Then it provied the new dns,changed it to domain provider website(such as godaddy)
-4.On the Testing ,We have to check does it working on https securely or not (if not we have to wait for some confirmation,mail or any messages from provider,AWS  )
-5.Lastly ,Our project is deployed on the production level 
+
+### Phase 7 :Testing
+1.On the Testing ,We have to check does it working on https securely or not (if not we have to wait for some confirmation,mail or any messages from provider,AWS  )
+2..Lastly ,Our project is deployed on the production level 
 By using this following method I can deployed this porject on AWS
+
 
 
 

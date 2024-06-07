@@ -21,7 +21,7 @@ logger=logging.getLogger('django')
 def ClinicianCreateAPI(request):
     """
     Create the Clinician record by the user who is logged in
-    and validation is done by the if the clinician already esist in our record it should not let to create again.
+    and validation is done by the if the clinician already exist in our record it should not let to create again.
     """
     user = request.user
     try:
