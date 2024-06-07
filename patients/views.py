@@ -13,7 +13,6 @@ from django.utils import timezone
 from django.core.paginator import Paginator , EmptyPage, PageNotAnInteger
 from rest_framework.decorators import api_view,APIView,permission_classes
 
-
 logger=logging.getLogger('django')
 
 @api_view(['POST'])
